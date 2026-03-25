@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>🎬 Movie Wishlist</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-save {
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-clear {
+      background: red;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .movies {
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .card h3 {
+      margin: 0 0 5px;
+    }
+
+    .date {
+      font-size: 12px;
+      color: gray;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>🎬 Movie Wishlist</h1>
+
+    <!-- INPUT -->
+    <input type="text" id="title" placeholder="Tiêu đề phim">
+    <textarea id="description" placeholder="Lý do / Mô tả muốn xem"></textarea>
+
+    <!-- BUTTON -->
+    <button class="btn-save" onclick="addMovie()">Lưu</button>
+    <button class="btn-clear" onclick="clearAll()">Xóa tất cả</button>
+
+    <!-- LIST -->
+    <div class="movies" id="movieList"></div>
+  </div>
+
+  <script>
+    // ===== ARROW FUNCTION =====
+
+    const getMovies = () =>
+      JSON.parse(localStorage.getItem("movieWishlist")) || [];
+
+    const saveMovies = (movies) =>
+      localStorage.setItem("movieWishlist", JSON.stringify(movies));
+
+    const addMovie = () => {
+      const title = document.getElementById("title").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      // Validate
+      if (!title) {
+        alert("Vui lòng nhập tiêu đề phim!");
+        return;
+      }
+
+      const movie = {
+        id: Date.now(),
+        title,
+        description,
+        date: new Date().toLocaleString()
+      };
+
+      const movies = getMovies();
+      movies.push(movie);
+      saveMovies(movies);
+
+      // Clear input
+      document.getElementById("title").value = "";
+      document.getElementById("description").value = "";
+
+      alert("Lưu thành công!");
+
+      renderMovies();
+    };
+
+    const renderMovies = () => {
+      const movieList = document.getElementById("movieList");
+      const movies = getMovies();
+
+      movieList.innerHTML = "";
+
+      movies.forEach(movie => {
+        movieList.innerHTML += `
+          <div class="card">
+            <h3>🎥 ${movie.title}</h3>
+            <p>${movie.description || ""}</p>
+            <div class="date">${movie.date}</div>
+          </div>
+        `;
+      });
+    };
+
+    const clearAll = () => {
+      if (confirm("Bạn có chắc muốn xóa tất cả?")) {
+        localStorage.removeItem("movieWishlist");
+        renderMovies();
+      }
+    };
+
+    // Load khi mở trang
+    document.addEventListener("DOMContentLoaded", () => {
+      renderMovies();
+    });
+
+  </script>
+
+</body>
+</html>
